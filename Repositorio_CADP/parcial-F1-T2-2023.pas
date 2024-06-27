@@ -13,7 +13,7 @@
 // digtos impares.
 // NOTA: Implementar el programa principal.
 
-program panaderia
+program Panaderia
 
 const
     totalCategorias = 20;

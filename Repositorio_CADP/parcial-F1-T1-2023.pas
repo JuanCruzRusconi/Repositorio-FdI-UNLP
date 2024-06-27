@@ -1,4 +1,6 @@
-program panaderia
+// Consigna
+
+program Panaderia
 
 const 
     categorias = 26;

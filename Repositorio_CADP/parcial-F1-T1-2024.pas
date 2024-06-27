@@ -1,4 +1,6 @@
-program practica
+// Consigna
+
+program Repuestos
 
 const
     paises = 200;

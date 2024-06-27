@@ -9,7 +9,7 @@
 // c. (COMPLETO): Implementar e invocar a un módulo que genere una lista con los jugadores cuyo código posee exactamente 3 dígitos impares y 
 // haya nacido entre 1983 y 1990, La lista debe estar ordenada por código de jugador.
 
-program Parcial
+program Revista
 
 const
     totalEquipos = 28;

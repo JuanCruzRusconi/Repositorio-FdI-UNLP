@@ -1,4 +1,6 @@
-program parcialt2
+// Consigna
+
+program Repuestos
 
 const
     totalMarcas = 130;
