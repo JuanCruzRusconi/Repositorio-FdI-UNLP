@@ -85,8 +85,8 @@ type
         while (cod <> 0) and (cant < 3) do
         begin
             num:= cod MOD 10
-            if((num DIV 10) = 0) then cant:= cant + 1;
-            num MOD 10;
+            if((num MOD 2) = 0) then cant:= cant + 1;
+            num DIV 10;
         end;
         if(cant = 3) then
         rep3Ceros:= true;
