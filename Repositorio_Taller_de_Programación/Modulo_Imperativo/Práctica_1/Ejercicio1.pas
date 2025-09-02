@@ -115,17 +115,28 @@ type
 
     procedure cargarVectorCodigoPar (vec: vector; dimL: integer; var v: vectorCodigoPar; var dimLP: integer);
     var
-        i, cod: integer;
+        i: integer;
+        prod: producto;
     begin
         inicializarVector(v);
-        for i:= 1 to dimL do
+        i:= 1;
+        while(i <= dimL) do
         begin
             if(vec[i].cod MOD 2 = 0) then
             begin
+                prod.cod:= vec[i].cod;
+                prod.cant:= 0;
+                while(i <= dimL) and (vec[i].cod = prod.cod) do
+                begin
+                    prod.cant:= prod.cant + vec[i].cantVend;
+                    i:= i + 1;
+                end;
                 dimLP:= dimLP + 1;
-                cod:= vec[i].cod;
-                v[dimLP].cod:= cod;
-                v[dimLP].cant:= v[dimLP].cant + vec[i].cantVend;
+                v[dimLp]:= prod;
+            end;
+            else
+            begin
+                i:= i + 1;
             end;
         end;
     end;
@@ -154,12 +165,12 @@ begin
     ordenarVectorVentas(vec,dimL);
     writeln('Vector ordenado imprezo:');
     imprimirVector(vec,dimL);
-    writeln('Ingrese un numero del 1 al 15');
-    readln(numA);
-    writeln('Ingrese otro numero del 1 al 15');
-    readln(numB);
-    eliminarVentasCodigo(vec, dimL, numA, numB);
-    imprimirVector(vec,dimL);
+    // writeln('Ingrese un numero del 1 al 15');
+    // readln(numA);
+    // writeln('Ingrese otro numero del 1 al 15');
+    // readln(numB);
+    // eliminarVentasCodigo(vec, dimL, numA, numB);
+    // imprimirVector(vec,dimL);
     cargarVectorCodigoPar(vec, dimL, vecCodPar, dimLP);
     imprimirVectorCodPar(vecCodPar, dimLP);
 end.
