@@ -132,7 +132,7 @@ type
         for i: 1 to dimL-1 do
         begin
             pos:= i;
-            for j:= pos to dimL do
+            for j:= i+1 to dimL do
                 if(v[j].precio < v[pos].precio) then pos:= j;
             item:= v[pos];
             v[pos]: v[i];
@@ -176,3 +176,28 @@ begin
     promedio:= calcularPromedio(vecProds3, dimL);
     writeln('El promedio de todos los precios es: ', promedio);
 end.
+
+
+
+// procedure seleccion(var v: vector; dimL: integer);
+// var
+//     i, j, pos: integer;
+//     item: tipo;
+// begin
+//     for i:= 1 to dimL-1 do begin
+//         pos:= i;
+//         for j:= i+1 to dimL do
+//             if(v[j].elem < v[pos].elem) then pos:= j;
+//         item:= v[pos];
+//         v[pos]:= v[i];
+//         v[i]:= item;
+//     end;
+    
+// end;
+
+// procedure insercion(var v: vector; dimL: integer);
+// var
+
+// begin
+    
+// end;
