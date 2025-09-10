@@ -25,7 +25,6 @@ type
     var
         num: integer;
     begin
-        Randomize;
         num:= 10 + Random(155 - 10);
         if(dimL < dimF) and (num <> 20) then 
             begin
@@ -41,16 +40,15 @@ type
         i: integer;
     begin
         for i:= 1 to dimL do
-            writeln('El numero en la posicion: ', i, ' es: ', v[dimL]);
+            writeln('El numero en la posicion: ', i, ' es: ', v[i]);
     end;
 
-    procedure imprimirVectorRecursivo(v: vector; var i: integer; dimL: integer);
+    procedure imprimirVectorRecursivo(v: vector; dimL: integer);
     begin
-        if(i <= dimL) then
+        if(dimL > 0) then
             begin
-                writeln('Numero posicion: ', i, ' es: ', v[dimL]);
-                i:= i + 1;
-                imprimirVectorRecursivo(v, i, dimL);
+                writeln('Numero posicion: ', dimL, ' es: ', v[dimL]);
+                imprimirVectorRecursivo(v, dimL - 1);
             end;
     end;
 
@@ -79,13 +77,13 @@ type
 
 var
     v: vector;
-    i, dimL, total: integer;
+    dimL, total: integer;
 begin
+    Randomize;
     dimL:= 0;
     cargarVector(v, dimL);
     imprimirVector(v, dimL);
-    i:= 1;
-    imprimirVectorRecursivo(v, i, dimL);
+    imprimirVectorRecursivo(v, dimL);
     total:= sumaValoresPar(v, dimL);
     writeln('El total es: ', total);
     
