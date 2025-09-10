@@ -39,7 +39,6 @@ type
     var
         num: rangoNums;
     begin
-        Randomize;
         num:= 100 + Random(110 - 100);
         if(num <> 100) then begin
             writeln('Numero generado: ', num);
@@ -52,7 +51,7 @@ type
     begin
         if(l <> nil) then
             begin
-                 writeln('Numero imprezo: ', l^.elem);
+                 writeln('Numero impreso: ', l^.elem);
                  imprimirListaRecursiva(l^.sig);
             end;
     end;
@@ -62,7 +61,7 @@ type
         if(l <> nil) then
             begin
                 imprimirListaRecursivaRevez(l^.sig);
-                writeln('Numero imprezo al revez: ', l^.elem);
+                writeln('Numero impreso al revez: ', l^.elem);
             end;
     end;
    
@@ -71,19 +70,21 @@ type
         if(l <> nil) then
             begin
                 if(l^.elem < minimo) then minimo:= l^.elem;
-                    devolverMinimo(l^.sig, minimo);
-            end;
+                devolverMinimo:= devolverMinimo(l^.sig, minimo);
+            end
+        else
             devolverMinimo:= minimo;
     end;
    
-    function encontrarValor(l: lista; var esta: boolean; valor: integer): boolean;
+    function encontrarValor(l: lista; valor: integer): boolean;
     begin
-        if(l <> nil) and (esta = false) then
+        if(l <> nil) then
             begin
-                if(l^.elem = valor) then esta:= true;
-                    encontrarValor(l^.sig, esta, valor);
-            end;
-            encontrarValor:= esta;
+                if(l^.elem = valor) then encontrarValor:= true
+                else encontrarValor:= encontrarValor(l^.sig, valor);
+            end
+        else
+            encontrarValor:= false;
     end;
    
 var
@@ -92,6 +93,7 @@ var
     valor: integer;
     esta: boolean;
 begin
+    Randomize;
     generarListaRecursiva(l);
     imprimirListaRecursiva(l);
     imprimirListaRecursivaRevez(l);
@@ -100,7 +102,6 @@ begin
     writeln('El numero minimo es: ', minimo);
     writeln('Ingrese un numero entre los valores 101 - 120');
     readln(valor);
-    esta:= false;
-    esta:= encontrarValor(l, esta, valor);
+    esta:= encontrarValor(l, valor);
     writeln('El numero ingresado se encuentra dentro de la lista: ', esta);
 end.
