@@ -1,183 +1,211 @@
-{Escribir un programa que:
-a. Implementar un modulo que almacene informacion de socios de un club en un arbol binario de busqueda. De cada socio se debe almacenar numero de socio, 
-nombre y edad. La carga finaliza con el numero de socio 0 y el arbol debe quedar ordenado por numero de socio. La informacion de cada socio debe generarse
-aleatoriamente.
+Escribir un programa que:
+a. Implementar un modulo que almacene informacion de socios de un club en un arbol binario de busqueda. De cada socio 
+se debe almacenar numero de socio, nombre y edad. La carga finaliza con el numero de socio 0 y el arbol debe quedar
+ordenado por numero de socio. La informacion de cada socio debe generarse aleatoriamente.
 b. Una vez generado el arbol, realice modulos independientes que reciban el arbol como parametro para: 
     i. Informar los datos de los socios en orden creciente    por número de socio.
     ii. Informar los datos de los socios en orden decreciente por número de socio.
     iii. Informar el número de socio con mayor edad. Debe invocar a un módulo recursivo que retorne dicho valor.
     iv. Aumentar en 1 la edad de los socios con edad impar e informar la cantidad de socios que se les aumento la edad.
-    vi. Leer un nombre e informar si existe o no existe un socio con ese nombre. Debe invocar a un módulo recursivo que reciba el nombre leído y retorne verdadero o falso.
+    vi. Leer un nombre e informar si existe o no existe un socio con ese nombre. Debe invocar a un módulo recursivo que 
+    reciba el nombre leído y retorne verdadero o falso.
     vii. Informar la cantidad de socios. Debe invocar a un módulo recursivo que retorne dicha cantidad.
-    viii. Informar el promedio de edad de los socios. Debe invocar al módulo recursivo del inciso vii e invocar a un módulo recursivo que retorne la suma de las edades de los socios.
+    viii. Informar el promedio de edad de los socios. Debe invocar al módulo recursivo del inciso vii e invocar a un 
+    módulo recursivo que retorne la suma de las edades de los socios.
 
-}
+Program Ejercicio1;
 
-Program ImperativoClase3;
+type
+    rangoEdad = 12..80;
+    cadena = string[15];
 
-type rangoEdad = 12..100;
-     cadena15 = string [15];
-     socio = record
-               numero: integer;
-               nombre: cadena15;
-               edad: rangoEdad;
-             end;
-     arbol = ^nodoArbol;
-     nodoArbol = record
-                    dato: socio;
-                    HI: arbol;
-                    HD: arbol;
-                 end;
-     
-procedure GenerarArbol (var a: arbol);
-{ Implementar un modulo que almacene informacion de socios de un club en un arbol binario de busqueda. De cada socio se debe almacenar numero de socio, 
-nombre y edad. La carga finaliza con el numero de socio 0 y el arbol debe quedar ordenado por numero de socio. La informacion de cada socio debe generarse
-aleatoriamente. }
-
-  Procedure CargarSocio (var s: socio);
-  var vNombres:array [0..9] of string= ('Ana', 'Jose', 'Luis', 'Ema', 'Ariel', 'Pedro', 'Lena', 'Lisa', 'Martin', 'Lola'); 
-  
-  begin
-    s.numero:= random (51) * 100;
-    If (s.numero <> 0)
-    then begin
-           s.nombre:= vNombres[random(10)];
-           s.edad:= 12 + random (79);
-         end;
-  end;  
-  
-  Procedure InsertarElemento (var a: arbol; elem: socio);
-  Begin
-    if (a = nil) 
-    then begin
-           new(a);
-           a^.dato:= elem; 
-           a^.HI:= nil; 
-           a^.HD:= nil;
-         end
-    else if (elem.numero < a^.dato.numero) 
-         then InsertarElemento(a^.HI, elem)
-         else InsertarElemento(a^.HD, elem); 
-  End;
-
-var unSocio: socio;  
-Begin
- writeln;
- writeln ('----- Ingreso de socios y armado del arbol ----->');
- writeln;
- a:= nil;
- CargarSocio (unSocio);
- while (unSocio.numero <> 0)do
-  begin
-   writeln ('Numero generado: ', unSocio.numero);
-   InsertarElemento (a, unSocio);
-   CargarSocio (unSocio);
-  end;
- writeln;
- writeln ('//////////////////////////////////////////////////////////');
- writeln;
-end;
-
-procedure InformarSociosOrdenCreciente (a: arbol);
-{ Informar los datos de los socios en orden creciente. }
-  
-  procedure InformarDatosSociosOrdenCreciente (a: arbol);
-  begin
-    if (a <> nil) then begin
-        InformarDatosSociosOrdenCreciente (a^.HI);
-        writeln ('Numero: ', a^.dato.numero, ' Nombre: ', a^.dato.nombre, ' Edad: ', a^.dato.edad);
-        InformarDatosSociosOrdenCreciente (a^.HD);
+    socio = record
+        num: integer;
+        nombre: cadena;
+        edad: rangoEdad;
     end;
-  end;
 
-Begin
- writeln;
- writeln ('----- Socios en orden creciente por numero de socio ----->');
- writeln;
- InformarDatosSociosOrdenCreciente (a);
- writeln;
- writeln ('//////////////////////////////////////////////////////////');
- writeln;
-end;
+    arbol = ^nodo;
+    nodo = record
+        elem: socio;
+        hi: arbol;
+        hd: arbol;
+    end;
 
+    procedure leerSocio(var s: socio);
+    begin
+        s.num:= random(15);
+        if(s.num <> 0) then
+            begin
+                s.nombre:= 'Juan';
+                s.edad:= 12 + random(80 - 12);
+            end;
+    end;
 
-procedure InformarNumeroSocioConMasEdad (a: arbol);
-{ Informar el numero de socio con mayor edad. Debe invocar a un modulo recursivo que retorne dicho valor.  }
+    procedure agregarAlArbol(var a: arbol; s: socio);
+    begin
+        if(a = nil) then begin
+            new(a); a^.elem:= s; a^.hi:= nil; a^.hd:= nil
+        end
+        else
+            begin
+                if(a^.elem.num > s.num) then agregarAlArbol(a^.hi, s)
+                else agregarAlArbol(a^.hd, s)
+            end;
+    end;
 
-     procedure actualizarMaximo(var maxValor,maxElem : integer; nuevoValor, nuevoElem : integer);
-	begin
-	  if (nuevoValor >= maxValor) then
-	  begin
-		maxValor := nuevoValor;
-		maxElem := nuevoElem;
-	  end;
-	end;
-	procedure NumeroMasEdad (a: arbol; var maxEdad: integer; var maxNum: integer);
-	begin
-	   if (a <> nil) then
-	   begin
-		  actualizarMaximo(maxEdad,maxNum,a^.dato.edad,a^.dato.numero);
-		  numeroMasEdad(a^.hi, maxEdad,maxNum);
-		  numeroMasEdad(a^.hd, maxEdad,maxNum);
-	   end; 
-	end;
+    procedure cargarInformacion(var a: arbol);
+    var
+        s: socio;
+    begin
+        leerSocio(s);
+        while(s.num <> 0) do
+            begin
+                agregarAlArbol(a, s);
+                leerSocio(s);
+            end;
+    end;
 
-var maxEdad, maxNum: integer;
+    procedure informarSociosCreciente(a: arbol);
+    begin
+        if(a <> nil) then
+            begin
+                informarSociosCreciente(a^.hi);
+                write(a^.elem.num);
+                write(a^.elem.nombre);
+                write(a^.elem.edad);
+                writeln('-----');
+                informarSociosCreciente(a^.hd);
+            end;
+    end;
+
+    procedure informarSociosDecreciente(a: arbol);
+    begin
+        if(a <> nil) then
+            begin
+                informarSociosDecreciente(a^.hd);
+                writeln(a^.elem.num);
+                writeln(a^.elem.nombre);
+                writeln(a^.elem.edad);
+                writeln('-----');
+                informarSociosDecreciente(a^.hi);
+            end;
+    end;
+
+    procedure actualizarMaximo(num: integer; edad: integer; var maxEdad: integer; var maxNum: integer);
+    begin
+        if(edad > maxEdad) then
+            begin
+                maxEdad:= edad;
+                maxNum:= num;
+            end;
+    end;
+
+    procedure socioMayorEdad(a: arbol; var maxNum: integer; var maxEdad: integer);
+    begin
+        if(a <> nil) then
+            begin
+                actualizarMaximo(a^.elem.num, a^.elem.edad, maxEdad, maxNum);
+                socioMayorEdad(a^.hi, maxNum, maxEdad);
+                socioMayorEdad(a^.hd, maxNum, maxEdad);
+            end;
+    end;
+
+    function esImpar(num: integer): boolean;
+    begin
+        if(num MOD 2 = 0) then esImpar:= true
+        else esImpar:= false;
+    end;
+
+    function aumentarEdadEInformar(var a: arbol): integer;
+    var 
+        resto: integer;
+    begin
+        if(a <> nil) then
+            begin
+                resto:= a^.elem.edad MOD 2;
+                if(resto <> 0) then a^.elem.edad:= a^.elem.edad + 1;
+                aumentarEdadEInformar:= aumentarEdadEInformar(a^.hi) + aumentarEdadEInformar(a^.hd) + resto;
+            end
+        else    
+            aumentarEdadEInformar:= 0;
+    end;
+    
+    function buscarNombre(a: arbol; nombre: string): boolean;
+    var
+        existe: boolean;
+    begin
+        if(a = nil) then buscarNombre:= false
+        else
+            begin
+                if(a^.elem.nombre = nombre) then buscarNombre:= true
+                else
+                    begin
+                        existe:= buscarNombre(a^.hi, nombre);
+                        if(existe = false) then existe:= buscarNombre(a^.hd, nombre);
+                        buscarNombre:= existe;
+                    end;
+            end;
+    end;
+    
+    function informarSocios(a: arbol): integer;
+    begin
+        if(a = nil) then
+            informarSocios:= 0
+        else
+            informarSocios:= 1 + informarSocios(a^.hi) + informarSocios(a^.hd);
+    end;
+    
+    function calcularEdades(a: arbol): integer;
+    begin
+        if(a = nil) then calcularEdades:= 0
+        else
+            calcularEdades:= a^.elem.edad + calcularEdades(a^.hi) + calcularEdades(a^.hd);
+    end;
+    
+    function calcularPromedio(a: arbol): real;
+    var
+        cant, edades: integer;
+    begin
+        cant:= informarSocios(a);
+        if(cant = 0) then calcularPromedio:= 0
+        else
+            begin
+                edades:= calcularEdades(a);
+                calcularPromedio:= edades/cant;
+            end;
+    end;
+
+var
+    a: arbol;
+    maxNum: integer;
+    maxEdad: integer;
+    cant: integer;
+    nom: string;
+    nombre: boolean;
+    socios: integer;
+    promedio: real;
 begin
-  writeln;
-  writeln ('----- Informar Numero Socio Con Mas Edad ----->');
-  writeln;
-  maxEdad := -1;
-  NumeroMasEdad (a, maxEdad, maxNum);
-  if (maxEdad = -1) 
-  then writeln ('Arbol sin elementos')
-  else begin
-         writeln;
-         writeln ('Numero de socio con mas edad: ', maxNum);
-         writeln;
-       end;
-  writeln;
-  writeln ('//////////////////////////////////////////////////////////');
-  writeln;
-end;
-
-procedure AumentarEdadNumeroImpar (a: arbol);
-{Aumentar en 1 la edad de los socios con edad impar e informar la cantidad de socios que se les aumento la edad.}
-  
-  function AumentarEdad (a: arbol): integer;
-  var resto: integer;
-  begin
-     if (a = nil) 
-     then AumentarEdad:= 0
-     else begin
-            resto:= a^.dato.edad mod 2;
-            if (resto = 1) then a^.dato.edad:= a^.dato.edad + 1;
-            AumentarEdad:= resto + AumentarEdad (a^.HI) + AumentarEdad (a^.HD);
-          end;  
-  end;
-
-begin
-  writeln;
-  writeln ('----- Cantidad de socios con edad aumentada ----->');
-  writeln;
-  writeln ('Cantidad: ', AumentarEdad (a));
-  writeln;
-  writeln;
-  writeln ('//////////////////////////////////////////////////////////');
-  writeln;
-end;
-
-var a: arbol; 
-Begin
-  randomize;
-  GenerarArbol (a);
-  InformarSociosOrdenCreciente (a);
-  {InformarSociosOrdenDecreciente (a); COMPLETAR}
-  InformarNumeroSocioConMasEdad (a);
-  AumentarEdadNumeroImpar (a);
-  InformarSociosOrdenCreciente (a);
-  { InformarExistenciaNombreSocio (a); COMPLETAR
-    InformarCantidadSocios (a); COMPLETAR
-    InformarPromedioDeEdad (a); COMPLETAR
-  }   
-End.
+    a:= nil;
+    Randomize;
+    cargarInformacion(a);
+    writeln('Informar socios creciente: ');
+    informarSociosCreciente(a);
+    writeln('Informar socios decreciente: ');
+    informarSociosDecreciente(a);
+    maxEdad:= -1;
+    socioMayorEdad(a, maxNum, maxEdad);
+    if(maxEdad = -1) then writeln('Arbol vacío')
+    else writeln('El socio con mayor edad es: ', maxNum, ' con la edad de: ', maxEdad);
+    cant:= aumentarEdadEInformar(a);
+    writeln('La cantidad de socios que se aumento la edad es de: ', cant);
+    informarSociosCreciente(a);
+    writeln('Ingrese un nombre');
+    readln(nom);
+    nombre:= buscarNombre(a, nom);
+    writeln('Se encontro el nombre: ', nombre);
+    socios:= informarSocios(a);
+    writeln('La cantidad de socios es: ', socios);
+    promedio:= calcularPromedio(a);
+    writeln('Promedio: ', promedio);
+end.
