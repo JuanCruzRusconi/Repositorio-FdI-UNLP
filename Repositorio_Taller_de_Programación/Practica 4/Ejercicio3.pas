@@ -97,23 +97,42 @@ type
         end;
     end;
 
-    procedure retornarProdMasUnidadesVendidas(a: arbol; var max: integer);
+    procedure actualizarMaximo(p: producto; var codMax: integer; var max: integer);
+    begin
+        if(p.cant > max) then begin
+            max:= p.cant;
+            codMax:= p.cod;
+        end;
+    end;
+
+    procedure retornarProdMasUnidadesVendidas(a: arbol; var codMax: integer; var max: integer);
     begin
         if(a <> nil) then begin
-            actualizarMaximo(a^.elem.cant, max);
-            retornarProdMasUnidadesVendidas(a^.hi, max);
-            retornarProdMasUnidadesVendidas(a^.hd, max);
+            actualizarMaximo(a^.elem.cant, codMax, max);
+            retornarProdMasUnidadesVendidas(a^.hi, codMax, max);
+            retornarProdMasUnidadesVendidas(a^.hd, codMax, max);
         end;
+    end;
+
+    function retornarMontoEntreValores(a: arbol; valorA, valorB: integer): real;
+    begin
+        if(a = nil) then retornarMontoEntreValores:= 0;
     end;
 
 var
     a: arbol;
     prodMasUVendidas: integer;
+    codMax: integer;
     max: integer;
+    valorA, valorB: integer;
 begin
     a:= nil;
     cargarInformacion(a);
     imprimirArbol(a);
     max:= -1;
-    retornarProdMasUnidadesVendidas(a, max);
+    retornarProdMasUnidadesVendidas(a, codMax, max);
+    writeln('El producto con mayor cantidad de unidades vendidas es el de codigo: ', codMax, ' con la cantidad de: ', max);
+    readln(valorA);
+    readln(valorB);
+    retornarMontoTotalEntreValores(a, valorA, valorB);
 end;
