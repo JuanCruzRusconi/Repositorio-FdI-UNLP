@@ -114,9 +114,15 @@ type
         end;
     end;
 
-    function retornarMontoEntreValores(a: arbol; valorA, valorB: integer): real;
+    function retornarMontoEntreValores(a: arbol; vA, vB: integer): real;
     begin
         if(a = nil) then retornarMontoEntreValores:= 0;
+        else
+        begin
+            if(a^.elem.cod < vA) then begin retornarMontoEntreValores:= retornarMontoEntreValores(a^.hd, vA, vB)
+            else if(a^.elem.cod > vB) then begin retornarMontoEntreValores:= retornarMontoEntreValores(a^.hi, vA, vB)
+            else retornarMontoEntreValores:= a^.elem.monto + retornarMontoEntreValores(a^.hi, vA, vB) + etornarMontoEntreValores(a^.hd, vA, vB);
+        end;
     end;
 
 var
@@ -125,6 +131,7 @@ var
     codMax: integer;
     max: integer;
     valorA, valorB: integer;
+    montoTotal: real;
 begin
     a:= nil;
     cargarInformacion(a);
@@ -132,7 +139,10 @@ begin
     max:= -1;
     retornarProdMasUnidadesVendidas(a, codMax, max);
     writeln('El producto con mayor cantidad de unidades vendidas es el de codigo: ', codMax, ' con la cantidad de: ', max);
+    writeln('Ingrese un valor A:');
     readln(valorA);
+    writeln('Ingrese un valor B (mayor que A):');
     readln(valorB);
-    retornarMontoTotalEntreValores(a, valorA, valorB);
+    montoTotal:= retornarMontoTotalEntreValores(a, valorA, valorB);
+    writeln('El monto total entre los valores ', valorA, ' y ', valorB, ' es de: ', montoTotal); 
 end;
