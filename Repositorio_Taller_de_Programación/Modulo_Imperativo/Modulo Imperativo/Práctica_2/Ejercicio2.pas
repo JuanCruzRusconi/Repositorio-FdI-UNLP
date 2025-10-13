@@ -88,3 +88,14 @@ begin
     writeln('El total es: ', total);
     
 end.
+
+
+
+procedure imprimirVectorRecursivo(v: vector; dimL: integer; var max: integer);
+    begin
+        if(dimL > 0) then
+            begin
+                if(v[dimL] > max) then max:= v[dimL];
+                imprimirVectorRecursivo(v, dimL - 1);
+            end;
+    end;
