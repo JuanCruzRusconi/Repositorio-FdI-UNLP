@@ -92,3 +92,28 @@ begin
     l:= nil;
     cargarDatos(l);
 end;
+
+
+
+procedure insertar(var l: listaInmuebles; i: inmueble)
+var
+    nuevo, ant, actual: l;
+begin
+    new(nuevo); nuevo^.elem:= i; nuevo^.sig: nil;
+    if(l = nil) then l:= nuevo;
+    else begin
+        ant:= l; actual:= l;
+        while(l <> nil) and(actual^.elem.cod < nuevo^.elem.cod) do begin
+            ant:= actual;
+            actual:= actual^.sig;
+        end;
+    end;
+    if(actual = l) then begin
+        nuevo^.sig:= l;
+        l:= nuevo;
+    end
+    else begin
+        ant^.sig:= nuevo;
+        nuevo^.sig:= actual;
+    end;
+end;
