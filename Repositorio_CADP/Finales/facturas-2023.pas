@@ -5,56 +5,64 @@ que se dispone y devuelva el código de sucursal con mayor cantidad de facturas.
 retornado por el módulo.
 
 Program facturas;
-
 const
     maxFacturas = 2000;
 type
     rangoFacturas = 1..maxFacturas;
-
     factura = record
-        numFac: integer;
-        codCli: integer;
-        codSuc: integer;
+        num: integer;
+        cod: integer;
+        suc: integer;
         monto: real;
     end;
+    vectorFacturas = array [rangoFacturas] of factura;
 
-    vectorFacturas = array[rangoFacturas] of factura;
-
-    procedure cargarVectorFacturas (var vF: vectorFacturas; var dimL: integer) //. se dispone
-
-    procedure actualizarMaximo (var maxCod: integer; var maxFac: integer; codActual: integer; cantActual: integer)
+    procedure cargarDatos(var v: vectorFacturas; var dL: integer);
+    var
+        i: integer; f: factura;
     begin
-        if(cantActual > maxFac) then begin
-            maxCod:= codActual;
-            maxFac:= cantActual;
+        dL:= 0;
+        leerFactura(f);
+        while(dL < maxFacturas) do begin
+            dL:= dL + 1;
+            v[dL]:= f;
+            leerFactura(f);
         end;
     end;
 
-    procedure procesarFacturas (vF: vectorFacturas; dimL: integer; var maxCod: integer; var maxFac: integer)
+    procedure actualizarMaximo(var mayorSuc: integer; var mayorFac: integer; suc, cant: integer; )
     var
-        i, codActual, cantActual: integer;
     begin
-        maxCod:= -1;
-        maxFac:= -1;
+        if(cant > mayorFac) then begin
+            mayorSuc:= suc;
+            mayorFac:= cant;
+        end;
+    end;
+
+    procedure procesarDatos(v: vectorFacturas; dL: integer; var mayorSuc: integer)
+    var
+        i, mayorFac: integer;
+        sucActual, cantActual: integer;
+    begin
+        max:= -1;
         i:= 1;
-        while(i <= dimL) do begin
+        while(i <= dL) do begin
+            sucActual:= v[i].suc;
             cantActual:= 0;
-            codActual:= vF[i].codSuc;
-            while(i <= dimL) and (codActual = vF[i].codSuc) do begin
+            while(i <= dL) and (sucActual = v[i].suc) do begin
                 cantActual:= cantActual + 1;
                 i:= i + 1;
             end;
-            actualizarMaximo(maxCod, maxFac, codActual, cantActual);
+            actualizarMaximo(mayorSuc, mayorFac, sucActual, cantActual);
         end;
     end;
 
 var
-    vF: vectorFacturas;
-    dimL: integer;
-    maxCod: integer;
-    maxFac: integer;
+    v: vectorFacturas;
+    dL: integer;
+    mayorSucursal: integer;
 begin
-    cargarVectorFacturas(vF, dimL); // se dispone
-    procesarFacturas(vF, dimL, maxCod, maxFac);
-    writeln("El codigo de sucursal con mayor cantidad de facturas es: ", maxCod);
-end.
+    cargarDatos(v, dL);
+    procesarDatos(v, dL, mayorSucursal);
+    writeln("La sucursal con mayor cantidad de facturas es: ", mayorSucursal);
+end;

@@ -4,32 +4,51 @@ estructura adecuada los participantes de aquellas categorías que posean a lo su
 participante se puede anotar en una sola categoría.
 
 Program carrera;
-const
-    maxInscriptos = 5000;
+const 
+    maxParticipantes = 5000;
 type
-    rangoCat = 1..5;
-
+    rangoParticipantes = 1..maxParticipantes;
+    rangoCategoria = 1..5;
     participante = record
         dni: integer;
-        nomApe: string;
-        categoria: rangoCat;
-        fecha: integer;
+        nombre: string;
+        categoria: rangoCategoria;
+        fecha: string;
     end;
 
-    vectorInscriptos = array[1..maxInscriptos] of participante;
+    vectorParticipantes = array[rangoParticipantes] of participante;
+    vectorCategorias = array[rangoCategoria] of integer;
 
     listaParticipantes = ^nodo;
-
     nodo = record
         elem: participante;
         sig: listaParticipantes;
     end;
 
-    vectorContador = array[rangoCat] of integer;
+    procedure leerParticipante(var p: participante)
+    begin
+        readln(p.dni);
+        if(p.dni <> -1) then begin
+            readln(p.nombre);
+            readln(p.categoria);
+            readln(p.fecha);
+        end;
+    end;
 
-    procedure cargarVectorInscriptos(var vI: vectorInscriptos; var dimL: integer) // se dispone
+    procedure cargarParticipantes(var v: vectorParticipantes; var dimL: rangoParticipantes)
+    var
+        p: participante;
+    begin
+        dL:= 0;
+        leerParticipante(p);
+        while(dimL <= maxParticipantes) and (p.dni <> -1) do begin
+            dL:= dL + 1;
+            v[dL]:= p;
+            leerParticipante(p);
+        end;
+    end;
 
-    procedure inicializarVector(var vC: vectorContador)
+    procedure inicializarVector(var vC: vectorCategorias)
     var
         i: integer;
     begin
@@ -37,49 +56,50 @@ type
             vC[i]:= 0;
     end;
 
-    procedure procesarParticipantes(vI: vectorInscriptos; dimL: integer; var vC: vectorContador)
+    procedure procesarParticipantes(v: vectorParticipantes; dimL: rangoParticipantes; var vC: vectorCategorias)
     var
         i: integer;
+        cant: integer;
     begin
         inicializarVector(vC);
-        for i:= 1 to dimL do begin
-            vC[vI[i].categoria]:= vC[vI[i].categoria] + 1;
+        i:= 1
+        while(i <= dimL) do begin
+            vC[v[i].categoria]:= vC[v[i].categoria] + 1;
+            i:= i + 1;
         end;
     end;
 
-    procedure agregarAtras(var lP: listaParticipantes; p: participante)
+    procedure agregarLista(var l: listaParticipantes; p: participante)
     var
-        nuevo, aux: listaParticipantes;
+        nuevo: listaParticipantes;
     begin
         new(nuevo); nuevo^.elem:= p; nuevo^.sig:= nil;
-        if(lP = nil) then lP:= nuevo;
+        if(l = nil) then l:= nuevo;
         else begin
-            aux:= lP;
-            while(aux^.sig <> nil) do
-                aux:= aux^.sig;
-            aux^.sig:= nuevo;
-        end; 
-    end;
-
-    procedure cargarListaParticipante(vI: vectorInscriptos, dimL: integer, vC: vectorContador, var lP: listaParticipantes);
-    var
-        i: integer;
-    begin
-        for i:= 1 to dimL do begin
-            if(vC[vI[i].categoria] <= 50) then
-                agregarAtras(lP, vI[i]);
+            nuevo^.sig:= l;
+            l:= nuevo;
         end;
     end;
 
+    procedure cargarListaParticipante(v: vectorParticipantes; dimL: rangoParticipantes; vC: vectorCategorias; var l: listaParticipantes);
+    var
+        i:= integer;
+    begin
+        i:= 1;
+        while(i <= dimL) do begin
+            if(vC[v[i].categoria] <= 50) then agregarLista(l, v[i]);
+            i:= i + 1;
+        end;
+    end;
 
-var
-    vI: vectorInscriptos;
-    dimL: integer;
+var 
+    vP: vectorParticipantes;
+    dimL: rangoParticipantes;
+    vC: vectorCategorias;
     lP: listaParticipantes;
-    vC: vectorContador;
 begin
+    cargarParticipantes(vP, dimL);
     lP:= nil;
-    cargarVectorInscriptos(vI, dimL);
-    procesarParticipantes(vI, dimL, vC);
-    cargarListaParticipante(vI, dimL, vC, lP);
+    procesarParticipantes(vP, dimL, vC);
+    cargarListaParticipante(vP, dimL, vC, lP);
 end.

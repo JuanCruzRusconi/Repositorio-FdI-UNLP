@@ -13,7 +13,7 @@
 // digtos impares.
 // NOTA: Implementar el programa principal.
 
-program Panaderia
+Program panaderia;
 const
     totalCategorias = 20;
 type
@@ -22,136 +22,131 @@ type
         nombre: string;
         precio: real;
     end;
-    vectorCategorias = array[rangoCategorias] of catgoria;
+    vectorCategorias = array[rangoCategorias] of categoria;
+
     compra = record
         dni: integer;
-        cat: rangoCategorias;
-        cantKilos: integer;
+        categoria: rangoCategorias;
+        cant: real;
     end;
-    listaCompras = ^nodo
+    listaCompras = ^nodo;
     nodo = record
         elem: compra;
-        sig: ^listaCompras;
+        sig: listaCompras;
     end;
-    vectorComprasPorCategoria = array[rangoCategorias] of integer;
-    
-    procedure cargarVectorCategorias ( var v: vectorCategorias ) // se dispone
 
-    procedure leerCompra ( var c: compra )
+    vectorCantidad = array[rangoCategorias] of integer;
+
+    procedure cargarCategorias(var v: vectorCategorias)
     var
+        i: integer;
+        c: categoria;
     begin
-        read(c.dni);
-        if(c.dni <> -1) then
-        begin
-            read(c.cat);
-            read(c.cantKilos);
+        for i:= 1 to totalCategorias do begin
+            leerCategoria(c);
+            v[i]:= c;
+        end;
+    end;
+    
+    procedure leerCompra(var c: compra)
+    begin
+        readln(c.dni);
+        if(c.dni <> -1) do begin
+            readln(categoria);
+            readln(cant);
         end;
     end;
 
-    procedure agregarAdelante ( var l: listaCompras; com: compra )
+    procedure agregarALista(var l: listaCompras; c: compra)
     var
         nuevo: listaCompras;
     begin
-        new(nuevo); nuevo^.elem: com; nuevo^.sig:= nil;
-        if( l = nil ) then l:= nuevo;
-        else
-            begin
-                nuevo^.sig:= l;
-                l:= nuevo;
-            end;
+        new(nuevo); nuevo^.elem:= c; nuevo^.sig:= nil;
+        if(l = nil) then l:= nuevo;
+        else begin
+            nuevo^.sig:= l;
+            l:= nuevo;
+        end;
     end;
 
-    procedure cargarListaCompras ( var l: listaCompras )
-    var 
-        c: compra; 
+    procedure procesarCompras(var l: listaCompras)
+    var
+        c: compra;
     begin
         leerCompra(c);
-        while(c.dni <> -1) do
-            begin
-                agregarAdelante(l, c);
-                leerCompra(c);
-            end;
+        while(c.dni <> -1) do begin
+            agregarALista(l, c);
+            leerCompra(c;)
+        end;
     end;
 
-    procedure inicializarVectorComprasCategorias ( var v: vectorComprasPorCategoria )
-    var
-        i: rangoCategorias;
-     begin
-        for i:= 1 to totalCategorias do
-            v[i]:= 0;
+    procedure actualizarMinimo(cliente: integer; monto: real; var dniMenor: integer; var min: real)
+    begin
+        if(monto < min) then begin
+            dniMenor:= cliente;
+            min:= monto;
+        end;
     end;
 
-    procedure actualizarClienteMinimo ( dni: integer; dinero: real; dniMinimo: integer )
+    function tiene5Impares(dni: integer): boolean;
     var
+        par, impar: integer;
+    begin
+        par:= 0;
+        impar:= 0;
+        while(dni <> 0) do begin
+            if(dni MOD 2 = 0) then par:= par + 1;
+            else impar:= impar + 1;
+            dni:= dni DIV 10;
+        end;
+        tiene5Impares:= (impar <= 5);
+    end;
+
+    procedure procesarInformacion(vC: vectorCategorias; lC: listaCompras; var dniMenor: integer; var vComp: vectorCantidad; var compDniImpar: integer;)
+    var
+        clienteActual: integer;
+        montoActual: real;
+        cantActual: integer;
         min: real;
     begin
-        minimo:= 99999;
-        if(dinero < minimo) then
-            begin
-                minimo:= dinero;
-                dniMinimo:= dni;
-             end;
-    end;
-
-    function tiene5DigImpares ( dni: integer ) : boolean
-    var
-        num; cant: integer;
-    begin
-        cant:= 0;
-        while(dni <> 0) and (cant <= 5) do
-            begin
-                num:= dni MOD 10;
-                if(num MOD 2 = 1) then cant:= cant + 1;
-                num:= num DIV 10;
+        inicializarVector(vComp);
+        min:= 9999;
+        compDniImpar:= 0;
+        while(l <> nil) do begin
+            clienteActual:= l^.elem.dni;
+            montoActual:= 0;
+            cantActual:= 0;
+            while(l <> nil) and (clienteActual = l^.elem.dni) do begin
+                montoActual:= montoActual + l^.elem.cant * vC[l^.elem.categoria].precio;
+                vComp[l^.elem.categoria]:= vComp[l^.elem.categoria] + 1;
+                cantActual:= cantActual + 1;
+                l:= l^.sig;
             end;
-        if(cant > 5) then tiene5DigImpares:= false;
-        else tiene5DigImpares:= true;
+            actualizarMinimo(clienteActual, montoActual, dniMenor, min);
+            if(tiene5Impares(clienteActual)) then compDniImpar:= compDniImpar + cantActual;
+        end;
     end;
 
-    procedure procesarInformacion ( v: vectorCategorias; l: listaCompras; var vCP: vectorComprasPorCategoria;
-                                    dniMin: integer; cantCom5Imp: integer)
+    procedure informarComprasXCategoria(v: vectorCantidad)
     var
-        dniActual: integer; dineroActual: real; cantComprasActual: integer;
-    begin
-        inicializarVectorComprasCategorias(vCPC);
-        cantCom5Imp:= 0;
-        while (l<> nil) do
-            begin
-                dniActual:= l^.elem.dni;
-                dineroActual:= 0;
-                cantCompras:= 0;
-                while (l<> nil) and (dniActual = l^.elem.dni) do
-                    begin
-                        dineroActual:= dineroActual + (l^.elem.cantKilos * vC[l^.elem.cat].precio );
-                        vCPC[l^.elem.cat]:= vCPC[l^.elem.cat] + 1;
-                        cantComprasActual:= cantComprasActual + 1;
-                        l:= l^.sig;
-                    end;
-                actualizarClienteMinimo(dniActual, dineroActual, dniMin);
-                if(tiene5DigImpares(dniActual)) then cantCom5Imp:= cantCom5Imp + cantComprasActual;
-            end;
-    end;
-
-    procedure informarCantidadComprasPorCategoria ( vCat: vectorCategorias; vComCat: vectorComprasPorCategoria )
-    var
-        i: rangoCategorias;
+        i: integer;
     begin
         for i:= 1 to totalCategorias do
-            begin
-                write("Categoria: ", vCat[i].nombre);
-                write("Cantidad de compras: ", vComCat[i]);
-            end;
+            writeln("La categoria ", i, " tiene un total de compras de: ", v[i]);
     end;
 
-    var
-        vC: vectorCategorias; lC: listaCompras; vCPC: vectorComprasPorCategoria; 
-        dniMinimo: integer; cantCompras5Impares: integer;
-    begin
-        cargarVectorCategorias(vC); // se dispone
-        lC:= nil;
-        cargarListaCompras(lC);
-        procesarInformacion(vC, lC, vCPC, dniMinimo, cantCompras5Impares);
-        write("El dni del cliente que menos ha gastado es: ", dniMinimo);
-        informarCantidadComprasPorCategoria(vC, vCPC);
-        write("La cantidad total de compras de clientes con dni con al menos 5 digitos imapares es: ", cantCompras5Impares);
-    end.
+var
+    vC: vectorCategorias;
+    lC: listaCompras;
+    dniMenor: integer;
+    vComp: vectorCantidad;
+    compDniImpar: integer;
+begin
+    cargarCategorias(vC);
+    lC:= nil;
+    procesarCompras(lC);
+    procesarInformacion(vC, lC, dniMenor, vComp, compDniImpar);
+    writeln("Dni del cliente que menos gasto: ", dniMenor);
+    informarComprasXCategoria(vComp);
+    writeln("La cantidad total de compras de clientes con dni 5 impares es de: ", compDniImpar);
+end.

@@ -4,9 +4,8 @@ productos vendidos (de cada producto vendido se tiene código y cantidad). Se pi
 programa que elimine de la estructura de datos todas las ventas cuya lista de productos contengan
 exactamente 5 productos.
 
-Program ventas;
-
-const
+Program comercio;
+const 
     maxVentas = 500;
 type
     rangoVentas = 1..maxVentas;
@@ -17,23 +16,22 @@ type
     end;
 
     listaProductos = ^nodo;
-
     nodo = record
         elem: producto;
-        sig: listaProductos
+        sig: listaProductos;
     end;
 
     venta = record
-        numVenta: integer;
-        montoTot: real;
-        listaProds: listaProductos;
+        num: integer;
+        monto: real;
+        lista: listaProductos;
     end;
 
-    vectorVentas = array[rangoVentas] of venta;
+    vector = array [rangoVentas] of venta;
 
-    procedure cargarDatos (var v: vectorVentas; var dimL: integer) // se dispone
+    procedure cargarDatos(var v: vector; var dL: integer)// se dispone
 
-    function contiene5Prods (l: listaProductos): boolean
+    function tiene5Productos(l: listaProductos): boolean
     var
         cant: integer;
     begin
@@ -42,32 +40,34 @@ type
             cant:= cant + 1;
             l:= l^.sig;
         end;
-        contiene5Prods:= (cant = 5);
+        tiene5Productos:= (cant = 5);
     end;
 
-    procedure eliminar (var v: vectorVentas; ven: venta)
-    var
-
-    begin
-        
-    end;
-
-    procedure procesarVentas (v: vectorVentas; dimL: integer; var l: listaProductos)
+    procedure eliminarVenta(var v: vector; var dL: integer; pos: integer)
     var
         i: integer;
     begin
-        for i:= 1 to dimL do begin
-            if(contiene5Prods(v[i].listaProds)) then eliminar(v, v[i]);
+        for i:= pos to dL-1 do begin
+            v[i]:= v[i+1];
+        end;
+        dL:= dL - 1;
+    end;
+
+    procedure procesarVentas(var v: vector; var dL: integer)
+    var
+        i: integer;
+    begin
+        i:= 1;
+        while(i <= dL) do begin
+            if(tiene5Productos(v[i].lista)) then eliminarVenta(v, dL, i);
+            else i:= i + 1;
         end;
     end;
 
 var
-    vV: vectorVentas;
-    dimL: integer
-    lP: listaProductos;
+    v: vector;
+    dL: integer;
 begin
-    lP:= nil;
-    dimL:= 0;
-    cargarDatos(vV, dimL); // se dispone
-    procesarVentas(vV, lP);
+    cargarDatos(v, dL); // se dispone
+    procesarVentas(v, dL);
 end.
