@@ -36,8 +36,10 @@ begin
     readln(nombre_archivo);
     assign(empleados, nombre_archivo);
     rewrite(empleados);
+
     writeln("Ingrese el apellido de empleado);
     readln(e.apellido);
+    
     while(e.apellido <> apeLimite) do begin
         writeln("Ingrese el nombre de empleado);
         readln(e.nombre);
@@ -57,10 +59,12 @@ begin
     readln(archivo_utilizar);
     assign(empleados, archivo_utilizar);
     reset(empleados);
+
     writeln("Ingrese el apellido a buscar")
     readln(apellidoImp);
     writeln("Ingrese el nombre a buscar")
     readln(nombreImp);
+
     while(not eof(empleados)) do begin
         read(empleados, e);
         // Listar empleados con nombre determiando
