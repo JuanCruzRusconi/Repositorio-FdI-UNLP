@@ -52,7 +52,7 @@ begin
             assign(empleados, nombre_archivo);
             reset(empleados);
 
-            writeln("Ingrese el numero de empleado);
+            writeln("Ingrese el numero de empleado");
             readln(numAgre);
             while(numAgre <> -1) do begin
                 seek(empleados, 0);
@@ -64,18 +64,18 @@ begin
                 end;
                 if(not existe) then begin
                     seek(empleados, fileSize(empleados));
-                    writeln("Ingrese el apellido de empleado);
+                    writeln("Ingrese el apellido de empleado");
                     readln(e.apellido);
-                    writeln("Ingrese el nombre de empleado);
+                    writeln("Ingrese el nombre de empleado");
                     readln(e.nombre);
                     e.num:= numAgre;
-                    writeln("Ingrese la edad de empleado);
+                    writeln("Ingrese la edad de empleado");
                     readln(e.edad);
-                    writeln("Ingrese el dni de empleado);
+                    writeln("Ingrese el dni de empleado");
                     readln(e.dni);
                     write(empleados, e);
                 end;
-                writeln("Ingrese el numero de empleado);
+                writeln("Ingrese el numero de empleado");
                 readln(numAgre);
             end;
             close(empleados);
@@ -102,7 +102,7 @@ begin
                         existe:= true;
                     end;
                     if(existe = false) then
-                        write("Empleado no encontrado);
+                        write("Empleado no encontrado");
                 end;
                 close(empleados);
             end
@@ -146,8 +146,6 @@ begin
                     close(empleados);
                     close(faltaDNIEmpleado);
                 end;
-    writeln("Ingrese otra opcion o otro numero para finalizar");
-    readln(opcion);
     
     until opcion = 0;
 end.

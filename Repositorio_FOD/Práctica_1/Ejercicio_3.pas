@@ -41,16 +41,16 @@ begin
     readln(e.apellido);
     
     while(e.apellido <> apeLimite) do begin
-        writeln("Ingrese el nombre de empleado);
+        writeln("Ingrese el nombre de empleado");
         readln(e.nombre);
-        writeln("Ingrese el numero de empleado);
+        writeln("Ingrese el numero de empleado");
         readln(e.numero);
-        writeln("Ingrese la edad de empleado);
+        writeln("Ingrese la edad de empleado");
         readln(e.edad);
-        writeln("Ingrese el dni de empleado);
+        writeln("Ingrese el dni de emplead");
         readln(e.dni);
         write(empleados, e);
-        writeln("Ingrese el apellido de empleado);
+        writeln("Ingrese el apellido de empleado");
         readln(e.apellido);
     end;
     close(empleados);

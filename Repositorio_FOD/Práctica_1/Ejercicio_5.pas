@@ -42,65 +42,87 @@ var
     c: celular;
     caracteres: string[30];
 begin
-    writeln("Ingrese el nombre del archivo a crear");
-    readln(nombre_arch_celulares);
-    assign(celulares, nombre_arch_celulares);
+    writeln("Opciones:");
+    writeln("Opcion 1 - ...");
+    writeln("Opcion 2 - ...");
+    writeln("Opcion 3 - ...");
+    writeln("Opcion 4 - ...");
+    
+    repeat 
+        writeln("Ingrese la opcion a realizar, 1-4");
+        readln(opcion);
 
-    writeln("Ingrese la opcion a realizar, 1-4");
-    readln(opcion);
+        if(opcion = 1) then begin
+            writeln("Ingrese el nombre del archivo a crear");
+            readln(nombre_arch_celulares);
+            assign(celulares, nombre_arch_celulares);
 
-    if(opcion = 1) then begin
-        writeln("Ingrese el nombre del archivo de texto");
-        readln(nombre_text_celulares);
-        assign(texto_celulares, nombre_text_celulares);
+            writeln("Ingrese el nombre del archivo de texto");
+            readln(nombre_text_celulares);
+            assign(texto_celulares, nombre_text_celulares);
 
-        reset(texto_celulares);
-        rewrite(celulares);
+            reset(texto_celulares);
+            rewrite(celulares);
 
-        while(not eof(texto_celulares)) do begin
-            readln(texto_celulares, c.cod, c.precio, c.marca);
-            readln(texto_celulares, c.stockDis, c.stockMin, c.desc);
-            readln(texto_celulares, c.nombre);
-            write(celulares, c);
-        end;
-        close(texto_celulares);
-        close(celulares);
-    end
-    else
-        if(opcion = 2) then begin
-            reset(celulares);
-            while(not eof(celulares)) do begin
-                read(celulares, c);
-                if(c.stockDis < c.stockMin) then
-                    writeln(c.cod,' ', c.nombre, ' ', c.desc, ' ', c.marca, ' ', c.precio, ' ', c.stockMin, ' ', c.stockDis);
+            while(not eof(texto_celulares)) do begin
+                readln(texto_celulares, c.cod, c.precio, c.marca);
+                readln(texto_celulares, c.stockDis, c.stockMin, c.desc);
+                readln(texto_celulares, c.nombre);
+                write(celulares, c);
             end;
+            close(texto_celulares);
             close(celulares);
         end
         else
-            if(opcion = 3) then begin
+            if(opcion = 2) then begin
+                writeln("Ingrese el nombre del archivo a utilizar");
+                readln(nombre_arch_celulares);
+                assign(celulares, nombre_arch_celulares);
                 reset(celulares);
-                writeln("Ingrese la cadena de caracteres a buscar");
-                readln(caracteres);
+
                 while(not eof(celulares)) do begin
                     read(celulares, c);
-                    if(c.desc = caracteres) then
+                    if(c.stockDis < c.stockMin) then
                         writeln(c.cod,' ', c.nombre, ' ', c.desc, ' ', c.marca, ' ', c.precio, ' ', c.stockMin, ' ', c.stockDis);
                 end;
                 close(celulares);
             end
-            else begin
-                writeln("Ingrese el nombre del archivo de texto");
-                readln(nombre_text_celulares);
-                assign(texto_celulares, nombre_text_celulares);
-                reset(celulares);
-                rewrite(texto_celulares);
-                while(not eof(celulares)) do begin
-                    read(celulares, c);
-                    writeln(texto_celulares, c.cod, ' ', c.precio, ' ', c.marca);
-                    writeln(texto_celulares, c.stockDis, ' ', c.stockMin, ' ', c.desc);
-                    writeln(texto_celulares, c.nombre);
+            else
+                if(opcion = 3) then begin
+                    writeln("Ingrese el nombre del archivo a utilizar");
+                    readln(nombre_arch_celulares);
+                    assign(celulares, nombre_arch_celulares);
+                    reset(celulares);
+
+                    writeln("Ingrese la cadena de caracteres a buscar");
+                    readln(caracteres);
+                    while(not eof(celulares)) do begin
+                        read(celulares, c);
+                        if(c.desc = caracteres) then
+                            writeln(c.cod,' ', c.nombre, ' ', c.desc, ' ', c.marca, ' ', c.precio, ' ', c.stockMin, ' ', c.stockDis);
+                    end;
+                    close(celulares);
+                end
+                else begin
+                    writeln("Ingrese el nombre del archivo a exportar");
+                    readln(nombre_arch_celulares);
+                    assign(celulares, nombre_arch_celulares);
+
+                    writeln("Ingrese el nombre del archivo de texto");
+                    readln(nombre_text_celulares);
+                    assign(texto_celulares, nombre_text_celulares);
+
+                    reset(celulares);
+                    rewrite(texto_celulares);
+                    while(not eof(celulares)) do begin
+                        read(celulares, c);
+                        writeln(texto_celulares, c.cod, ' ', c.precio, ' ', c.marca);
+                        writeln(texto_celulares, c.stockDis, ' ', c.stockMin, ' ', c.desc);
+                        writeln(texto_celulares, c.nombre);
+                    end;
+                    close(celulares);
+                    close(texto_celulares);
                 end;
-                close(celulares);
-                close(texto_celulares);
-            end;
+
+    until opcion = 0;
 end.
