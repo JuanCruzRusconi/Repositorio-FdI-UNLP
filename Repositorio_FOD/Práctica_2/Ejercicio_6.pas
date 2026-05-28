@@ -19,37 +19,35 @@ Además, informar la cantidad de localidades que poseen más de 50 casos activos
 que hayan sido actualizadas o no.
 
 Program ejercicio6;
-
-const
+const 
     valorAlto = 9999;
 type
     casoD = record
-        localidad: integer;
-        cepa: integer;
-        casosAct: integer;
-        casosNue: integer;
-        casosRec: integer;
-        casosRip: integer;
+        codLoc: integer;
+        codCepa: integer; 
+        cantAct: integer;
+        cantNue: integer;
+        cantRec: integer;
+        cantFall: integer;
     end;
+    archDetalle = file of casoD;
 
     casoM = record
-        localidad: integer;
-        nomLocalidad: string[20];
-        cepa: integer;
-        nomCepa: string[20];
-        casosAct: integer;
-        casosNue: integer;
-        casosRec: integer;
-        casosRip: integer;
+        codLoc: integer;
+        nomLoc: string[10]; 
+        codCepa: integer;
+        nomCepa: string[10];
+        cantAct: integer;
+        cantNue: integer; 
+        cantRec: integer;
+        cantFall: integer;
     end;
-
-    archDetalle = file of casoD;
     archMaestro = file of casoM;
 
     vectorDetalle = array[1..10] of archDetalle;
-    vectorCasosD = array[1..10] of casoD;
+    vectorReg = array[1..10] of casoD;
 
-    procedure leer(var detalle: archDetalle; var c: casoD);
+     procedure leer(var detalle: archDetalle; var c: casoD);
     begin
         if(not EOF(detalle)) then
             read(detalle, c)
@@ -57,98 +55,131 @@ type
             c.localidad:= valorAlto;
     end;
 
-    procedure cargarDetalles(var vD: vectorDetalle; var vCD: vectorCasoD);
+    procedure cargarDetalles(var vD: vectorDetalle; var vR: vectorRegistro);
     var
         i: integer;
     begin
         for i:= 1 to 10 do begin
-            assign(vD[i], 'archivo_detalle' + i);
+            assign(vD[i], 'archivo_detalle'+i);
             reset(vD[i]);
-            leer(vD[i], vCD[i]);
-        end;
+            leer(vD[i], vR[i]);
+        end;    
     end;
 
-    procedure calcularMinimo(var vD: vectorDetalle; var vCD: vectorCasoD; var minimo: casoD);
+    procedure calcularMinimo(var vD: vectorDetalle; var vR: vectorRegistro; var minimo: casoD);
     var
         i, pos: integer;
     begin
-        minimo.localidad:= valorAlto;
-        minimo.cepa:= valorAlto;
+        minimo.codLoc:= valorAlto;
+        minimo.codCepa:= valorAlto;
         for i:= 1 to 10 do begin
-            if(vCD[i].localidad < minimo.localidad) or
-            (vCD[i].localidad = minimo.localidad) and (vCD[i].cepa < minimo.cepa) then begin
-                minimo:= vCD[i];
+            if(vR[i].codLoc < minimo.codLoc) or (vR[i].codCepa = minimo.codLoc) and (vR[i].codLoc < minimo.codCepa) then begin
+                minimo:= vR[i];
                 pos:= i;
             end;
         end;
-        if(minimo.localidad <> valorAlto) then leer(vD[pos], vCD[pos]);
+        if(minimo.codLoc <> valorAlto) then leer(vD[pos], vR[pos]);
+    end;
+
+    procedure cerrarDetalles(var vD: vectorDetalle);
+    var
+        i: integer;
+    begin
+        for i:= 1 to 10 do
+            close(vD[i]);
+    end;
+
+    procedure procesarDatos(var maestro: archMaestro; var vD: vectorDetalle; var vR: vectorRegistro; var cant50LocAct: integer);
+    var
+        codLocActual, codCepaActual: integer;
+        minimo: casoD;
+        c: casoM;
+        codLocActualMae, cantCasosActMae: integer;
+        cantCasosActActual: integer;
+        cantActActual: integer;
+        cantNuevosActual: integer;
+        cantRecActual: integer;
+        cantFallActual: integer;
+    begin
+        cargarDetalles(vD, vR);
+        calcularMinimo(vD, vR, minimo);
+        read(maestro, c);
+
+        while(minimo.codLoc <> valorAlto) do begin
+            codLocActual:= minimo.codLoc;
+            cantCasosActActual:= 0;
+
+            while(c.codLoc < codLocActual) do begin
+                codLocActualMae:= c.codLoc;
+                cantCasosActMae:= 0;
+                while(codLocActualMae = c.codLoc) do begin
+                    cantCasosActMae:= cantCasosActMae + c.cantAct;
+                    read(maestro, c);
+                end;
+                if(cantCasosActMae > 50) then cant50LocAct:= cant50LocAct + 1;
+            end;
+
+            while(codLocActual = minimo.codLoc) do begin
+                codCepaActual:= minimo.codCepa;
+                cantActActual:= 0;
+                cantNuevosActual:= 0;
+                cantRecActual:= 0;
+                cantFallActual:= 0;
+                while(codLocActual = minimo.codLoc) and (codCepaActual = minimo.codCepa) do begin
+                    cantActActual:= cantActActual + minimo.cantAct;
+                    cantNuevosActual:= cantNuevosActual + minimo.cantNue;
+                    cantRecActual:= cantRecActual + minimo.cantRec;
+                    cantFallActual:= cantFallActual + minimo.cantFall;
+                    calcularMinimo(vD, vR, minimo);
+                end;
+
+                while(c.codLoc <> codLocActual) or (c.codLoc = codLocActual) and (c.codCepa <> codCepaActual) do begin
+                    read(maestro, c);
+                
+                c.cantFall:= c.cantFall + cantFallActual;
+                c.cantRec:= c.cantRec + cantRecActual;
+                c.cantAct:= cantActActual;
+                c.cantNue:= cantNueActual;
+
+                cantCasosActActual:= cantCasosActActual + c.cantAct;
+
+                seek(maestro, filePos(maestro) - 1);
+                write(maestro, c);
+
+                if(not EOF(maestro)) then read(maestro, c);
+            end;
+            if(cantCasosActActual > 50) then cantLoc50Act:= cantLoc50Act + 1;
+        end;
+        while(c.codLoc = codLocActual) do begin
+            cantCasosActActual:= cantCasosActActual + c.cantAct;
+            if(not EOF(maestro)) then
+                read(maestro, c)
+            else
+                c.codLoc:= valorAlto;
+        end;
+        if(cantCasosActActual > 50) then cantLoc50Act:= cantLoc50Act + 1;
+        while(not EOF(maestro)) do begin
+            codLocActual:= c.codLoc;
+            cantCasosActActual:= 0;
+            while(codLocActual = c.codLoc) do begin
+                cantCasosActActual:= cantCasosActActual + c.cantAct;
+                read(maestro, c);
+            end;
+            if(cantCasosActActual > 50) then cantLoc50Act:= cantLoc50Act + 1;
+        end;
     end;
 
 var
-    minimo: casoD;
-    cM: casoM;
     maestro: archMaestro;
     vD: vectorDetalle;
-    vCD: vectorCasoD;
-    locActual: integer;
-    cepActual: integer;
-    cantActivosActual: integer;
-    cantLocalidades50: integer;
-    cantRip: integer;
-    cantRec: integer;
-    cantAct: integer;
-    cantNue: integer;
+    vR: vectorRegistro;
+    cantLoc50Act: integer;
 begin
-    assign(maestro, 'archivo_maestro');
+    assign(maestro, 'arch_maestro');
     reset(maestro);
-
-    cargarDetalles(vD, vCD);
-    calcularMinimo(vD, vCD, minimo);
-
-    read(maestro, cM);
-
-    cantLocalidades50:= 0;
-
-    while(minimo.localidad <> valorAlto) do begin
-        locActual := minimo.localidad;
-        cantActivosActual:= 0;
-        while(minimo.localidad = locActual) do begin
-            cepActual:= minimo.cepa;
-            cantRip:= 0;
-            cantRec:= 0;
-            cantAct:= 0;
-            cantNue:= 0;
-            while(minimo.localidad = locActual) and (minimo.cepa = cepActual) do begin
-                cantRip:= cantRip + minimo.casosRip;
-                cantRec:= cantRec + minimo.casosRec;
-                cantAct:= cantAct + minimo.casosAct;
-                cantNue:= cantNue + minimo.casosNue;
-                calcularMinimo(vD, vCD, minimo);
-            end;
-
-            cantActivosActual:= cantActivosActual + cantAct;
-
-            while(cM.localidad <> locActual) do
-                read(maestro, cM);
-            
-            while(cM.localidad = locActual) and
-            (cM.cepa <> cepActual) do
-                read(maestro, cM);
-
-            cM.casosRip:= cM.casosRip + cantRip;
-            cM.casosRec:= cM.casosRec + cantRec;
-            cM.casosAct:= cantAct;
-            cM.casosNue:= cantNue;
-
-            seek(maestro, filePos(maestro) - 1);
-            write(maestro, cM);
-            if(not EOF(maestro)) then read(maestro, cM);
-
-        end;
-        if(cantActivosActual > 50) then cantLocalidades50:= cantLocalidades50 + 1;
-    end;
-
+    cantLoc50Act:= 0;
+    procesarDatos(maestro, vD, vR, cantLoc50Act);
+    writeln('La cantidad de localidades con mas de 50 casos axtivos es de ', cantLoc50Act);
     close(maestro);
     cerrarDetalles(vD);
-    writeln('La cantidad de localidades con mas de 50 casos activos es de: ', cantLocalidades50);
-end;
+end.

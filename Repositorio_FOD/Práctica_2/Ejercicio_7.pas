@@ -9,6 +9,7 @@ incluye: código de alumno, código de materia, año de cursada y resultado (sol
 cursada fue aprobada o desaprobada).
 Por su parte, el archivo de exámenes finales contiene información sobre los exámenes rendidos. Cada
 registro incluye: código de alumno, código de materia, fecha del examen y nota obtenida.
+
 Ambos archivos detalle están ordenados por código de alumno y código de materia, y pueden contener
 cero, uno o más registros por alumno.
 Un alumno puede cursar una misma materia varias veces, así como también rendir el examen final en
@@ -27,62 +28,139 @@ garantiza que un alumno no puede aprobar más de una vez la cursada de una misma
 manera análoga, tampoco puede aprobar más de una vez el examen final de una misma materia.
 
 Program ejercicio7;
-
 const
     valorAlto = 9999;
 type
     alumno = record
-        cod: integer;
-        ape: string[10];
+        codAlu: integer;
+        apellido: string[10];
         nombre: string[10];
-        cursadas: integer;
-        finales: integer;
+        cantCurApro: integer;
+        cantFinApro: integer;
+    end;
+    archMaestro = file of alumno;
+
+    cursada = record
+        codAlu: integer;
+        codMat: integer;
+        ano: integer;
+        resultado: boolean;
     end;
 
-    info = record
-        cod: integer;
-        materia: integer;
+    final = record
+        codAlu: integer;
+        codMat: integer;
         fecha: integer;
         nota: integer;
     end;
 
-    archMaestro = file of alumno;
-    archInfo = file of info;
+    archCursada = file of cursada;
+    archFinal = file of final;
 
-    procedure leer(var archivo: archInfo; var i: info);
+    procedure leerC(var cursada: archCursada; var c: cursada);
     begin
-        if(not EOF(archivo)) then
-            read(archivo, i)
+        if(not EOF(cursada)) then 
+            read(cursada, c)
         else
-            i.cod:= valorAlto;
+            c.codAlu:= valorAlto;
     end;
 
-    procedure calcularMinimo(var cursada: archInfo; var c: info; var final: archInfo; var f: info; var minimo: info; var tipo: integer);
+    procedure leerF(var final: archFinal; var f: final);
     begin
-        if(c.cod < f.cod) or (c.cod = f.cod) and (c.materia <= f.materia) then begin
-            minimo:= c;
-            tipo:= 1;
-             leer(cursada, c);
+        if(not EOF(final)) then 
+            read(final, f)
+        else
+            f.codAlu:= valorAlto;
+    end;
+
+    procedure calcularMinimos(var cursada: archCursada; var c: cursada; var minimoC: cursada; var final: archFinal; var f: final; var minimoF: final; var avanzar: integer);
+    begin
+        minimoC.codAlu:= valorAlto;
+        minimoF.codAlu:= valorAlto;
+        if((c.codAlu = f.codAlu) and (c.codMat = f.codMat)) then begin
+            avanzar:= 0;
+            minimoC:= c;
+            minimoF:= f;
+            leerC(cursada, c);
+            leerF(final, f);
+        end
+        else if(c.codAlu < f.codAlu) or (c.codAlu = f.codAlu) and (c.codMat < f.codMat) then begin
+            avanzar:= 1;
+            minimoC:= c;
+            leerC(cursada, c);
         end
         else begin
-            minimo:= f;
-            tipo:= 2;
-            leer(final, f);
+            avanzar:= 2;
+            minimoF:= f;
+            leerF(final, f);
+        end;
+    end;
+
+    procedure procesarDatos(var maestro: archMaestro; var cursada: archCursada; var final: archFinal);
+    var
+        codAluActual, codMatActual: integer;
+        a: alumno;
+        c: cursada;
+        f: final;
+        minimoC: cursada;
+        minimoF: final;
+        avanzar: integer;
+    begin
+        read(maestro, a);
+        leerC(cursada, c);
+        leerF(final, f);
+
+        calcularMinimos(cursada, c, minimoC, final, f, minimoF, avanzar);
+
+        while(minimoC.codAlu <> valorAlto) or (minimoF.codAlu <> valorAlto) do begin
+            if(avanzar = 0) then begin
+                codAluActual:= minimoC.codAlu;
+                
+                while(a.codAlu <> codAluActual) do
+                    read(maestro, a);
+
+                if(minimoC.resultado = true) then begin
+                    a.cantCurApro:= a.cantCurApro + 1;
+                end;
+
+                if(minimoF.nota >= 4) then begin
+                    a.cantFinApro:= a.cantFinApro + 1;
+                end;
+            end
+            else if(avanzar = 1) then begin
+                codAluActual:= minimoC.codAlu;
+                
+                while(a.codAlu <> codAluActual) do
+                    read(maestro, a);
+
+                if(minimoC.resultado = true) then begin
+                    a.cantCurApro:= a.cantCurApro + 1;
+                end;
+            end
+            else begin
+                codAluActual:= minimoF.codAlu;
+                
+                while(a.codAlu <> codAluActual) do
+                    read(maestro, a);
+
+                if(minimoF.nota >= 4) then begin
+                    a.cantFinApro:= a.cantFinApro + 1;
+                end;
+            end;
+
+            calcularMinimos(cursada, c, minimoC, final, f, minimoF, avanzar);
+
+            seek(maestro, filePos(maestro) - 1);
+            write(maestro, a);
+
+            if(not EOF(maestro)) then read(maestro, a);
         end;
     end;
 
 var
-    a: alumno;
-    c: info;
-    f: info;
-    minimo: info;
-    codAlumActual: integer;
     maestro: archMaestro;
-    cursada: archInfo;
-    final: archInfo;
-    cantCursadas: integer;
-    cantFinales: integer;
-    tipo: integer;
+    cursada: archCursada;
+    final: archFinal;
 begin
     assign(maestro, 'archivo_maestro');
     reset(maestro);
@@ -93,35 +171,10 @@ begin
     assign(final, 'archivo_final');
     reset(final);
 
-    read(maestro, a);
+    procesarDatos(maestro, cursada, final);
 
-    leer(cursada, c);
-    leer(final, f);
-
-    calcularMinimo(cursada, c, final, f, minimo, tipo);
-
-    while(minimo.cod <> valorAlto) do begin
-        codAlumActual:= minimo.cod;
-        cantCursadas:= 0;
-        cantFinales:= 0;
-        while(codAlumActual = minimo.cod) do begin
-            if(tipo = 1)
-                if(minimo.nota >= 4) then cantCursadas := cantCursadas + 1;
-            if(tipo = 2)
-                if(minimo.nota >= 4) then cantFinales := cantFinales + 1;
-            calcularMinimo(cursada, c, final, f, minimo, tipo);
-        end;
-
-        while(a.cod <> codAlumActual) do
-            read(maestro, a);
-
-        a.cursadas:= a.cursadas + cantCursadas;
-        a.finales:= a.finales + cantFinales;
-        seek(maestro, filePos(maestro) - 1);
-        write(maestro, a);
-        if(not eof(maestro)) then read(maestro, a);
-    end;
     close(maestro);
     close(cursada);
     close(final);
 end;
+
