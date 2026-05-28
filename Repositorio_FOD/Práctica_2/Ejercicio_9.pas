@@ -8,7 +8,7 @@ monto de la venta. El orden del archivo está dado por: cod cliente, año y mes.
 Nota: tenga en cuenta que puede haber meses en los que los clientes no realizaron compras. No es
 necesario que informe tales meses en el reporte.
 
-program ej9;
+program ejercicio9;
 const
     valorAlto = 9999;
 type

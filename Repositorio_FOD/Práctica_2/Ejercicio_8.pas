@@ -16,7 +16,7 @@ Para este informe deben considerarse tanto las provincias actualizadas como aque
 recibido modificaciones.
 Nota: Cada archivo debe recorrerse una única vez.
 
-program ej8;
+program ejercicio8;
 const
     valorAlto = 9999;
 type
